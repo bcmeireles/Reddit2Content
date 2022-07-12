@@ -5,13 +5,15 @@ import re
 
 from pathlib import Path
 
+MAX_CHARS = 300
+
 class SpeechEngine:
     def __init__(self, module, r_obj, path="temp/mp3"):
         self.module = module
         self.redditObject = r_obj
         self.path = path
         self.lenght = 0
-        self.maxlenght = 50
+        self.maxlenght = 50 # seconds
 
     def run(self):
 
@@ -32,7 +34,7 @@ class SpeechEngine:
         replyID = None
         for replyID, reply in enumerate(self.redditObject["replies"]):
             if self.length < self.maxlenght:
-                if not self.module.max_chars:
+                if not len(reply["body"]) > MAX_CHARS:
                     self.call(replyID, reply["body"])
                 else:
                     self.spit(replyID, reply["body"])
@@ -43,7 +45,7 @@ class SpeechEngine:
 
 
     def call(self, fName, text):
-        self.module.run(parseText(text), f"{self.path}/{fName}.mp3")
+        self.module.run(text=parseText(text), filepath=f"{self.path}/{fName}.mp3")
 
         try:
             clip = AudioFileClip(f"{self.path}/{fName}.mp3")
@@ -54,7 +56,7 @@ class SpeechEngine:
 
     def split(self, id, text):
         splitFiles = []
-        splitText = [x.group().strip() for x in re.finditer(r" *(((.|\n){0," + str(self.module.max_chars) + "})(\.|.$))", text)]
+        splitText = [x.group().strip() for x in re.finditer(r" *(((.|\n){0," + str(MAX_CHARS) + "})(\.|.$))", text)]
 
         off = 0
         for idy, cut in enumerate(splitText):
