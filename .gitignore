@@ -1,2 +1,6 @@
 
 .env
+temp/
+results/
+__pycache__/
+*.mp4

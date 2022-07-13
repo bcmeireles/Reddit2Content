@@ -15,7 +15,7 @@ class SpeechEngine:
         self.lenght = 0
         self.maxlenght = 50 # seconds
 
-    def run(self):
+    def run(self, storymode=False):
 
         Path(self.path).mkdir(parents=True, exist_ok=True)
 
@@ -28,7 +28,7 @@ class SpeechEngine:
         print("Saving text to MP3... ")
 
         self.call("title", self.redditObject["title"])
-        if self.redditObject["text"] != "":
+        if self.redditObject["text"] != "" and storymode:
             self.call("content", self.redditObject["text"])
 
         replyID = None
@@ -37,7 +37,7 @@ class SpeechEngine:
                 if not len(reply["body"]) > MAX_CHARS:
                     self.call(replyID, reply["body"])
                 else:
-                    self.spit(replyID, reply["body"])
+                    self.split(replyID, reply["body"])
             else:
                 break
 

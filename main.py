@@ -1,6 +1,11 @@
+import math
 from reddit.parser import getThreads
 from tts.tts import SpeechEngine
 from tts.voices import GTTS
+import math
+from reddit.screenshots import downloadScreenshots
+from video.background import cutbg
+from video.make import makevideo
 
 def text2mp3(r_obj):
     to_mp3 = SpeechEngine(GTTS, r_obj)
@@ -8,7 +13,10 @@ def text2mp3(r_obj):
 
 if __name__ == "__main__":
     infos = getThreads("AskReddit")
-    #leng, no = text2mp3(infos)
-    #print(leng, no)
+
     a = text2mp3(infos)
-    print(a)
+    length, count = math.ceil(a["length"]), a["idx"]
+
+    ss = downloadScreenshots(infos, count)
+    cutbg(length)
+    makevideo(count, length, infos, "AskReddit")
