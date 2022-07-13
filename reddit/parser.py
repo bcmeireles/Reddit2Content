@@ -23,6 +23,7 @@ def checkThreads(allThreads, sub, doneVideos):
 
 def doubleCheck(thread, doneVideos):
     if not str(thread) in doneVideos:
+        doneVideos.append(str(thread))
         return {"status": True, "doneVideos": doneVideos}
 
 def getInfo(thread):
@@ -51,7 +52,7 @@ def getInfo(thread):
 
     return info
 
-def getThreads(subreddit):
+def getThreads(subreddit, doneVids=[]):
 
     reddit = praw.Reddit(
         client_id=getenv("REDDIT_CLIENT_ID"),
@@ -65,12 +66,12 @@ def getThreads(subreddit):
     sub = reddit.subreddit(subreddit)
 
     hotThreads = sub.hot(limit=20)
-    possib = checkThreads(hotThreads, sub, [])
+    possib = checkThreads(hotThreads, sub, doneVids)
     doneVids = possib["doneVideos"]
     thread = possib["thread"]
     if doubleCheck(thread, doneVids)["status"]:
         infos = getInfo(thread)
+    else:
+        getThreads(subreddit, doneVids)
 
-    return infos
-
-print(getThreads("AskReddit"))
+    return {"infos": infos, "doneVideos": doneVids}

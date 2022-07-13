@@ -44,6 +44,7 @@ def makevideo(num, length, r_obj, sub):
             .resize(width=1080 - 100),
         )
 
+
     image_concat = concatenate_videoclips(image_clips).set_position(("center", "center"))
     image_concat.audio = audio_composite
     final = CompositeVideoClip([background_clip, image_concat])
@@ -62,6 +63,11 @@ def makevideo(num, length, r_obj, sub):
         verbose=False,
         threads=multiprocessing.cpu_count(),
     )
+
+    finalPath = f"results/{sub}/{filename}"
+
     ffmpeg_tools.ffmpeg_extract_subclip(
-        "temp/temp.mp4", 0, length, targetname=f"results/{sub}/{filename}"
+        "temp/temp.mp4", 0, int_total_length, targetname=finalPath
     )
+
+    return finalPath
