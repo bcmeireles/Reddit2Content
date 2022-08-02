@@ -1,6 +1,8 @@
 from os import getenv
 import json
 
+import random
+
 import praw
 from praw.models import MoreComments
 
@@ -27,10 +29,6 @@ def doubleCheck(thread, doneVideos):
         return {"status": True, "doneVideos": doneVideos}
 
 def getInfo(thread):
-    #upvotes = thread.score
-    #ratio = thread.upvote_ratio
-    #replyCount = thread.num_comments
-
     info = {}
     info["link"] = thread.permalink
     info["title"] = thread.title
@@ -38,7 +36,7 @@ def getInfo(thread):
     info["id"] = thread.id
     info["replies"] = []
 
-    for reply in thread.comments:
+    for reply in random.shuffle(thread.comments):
         if not isinstance(reply, MoreComments):
             if not reply == "[removed]":
                 if not reply == "[deleted]":
