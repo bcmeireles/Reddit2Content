@@ -85,4 +85,7 @@ if __name__ == "__main__":
                 sub = random.choice(acc["subs"])
                 print(f'[{i}] in {acc["username"]} from {sub}')
                 r2c_ig(acc, sub, i)
+
+        print(f"Sleeping for {timer / 60} minutes")
+        i += 1
         time.sleep(timer)

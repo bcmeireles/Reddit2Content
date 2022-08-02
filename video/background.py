@@ -5,7 +5,8 @@ from moviepy.editor import VideoFileClip
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 def cutbg(length):
-    background = VideoFileClip("background1.mp4")
+    bg = "backgrounds/" + random.choice(os.listdir("backgrounds"))
+    background = VideoFileClip(bg)
 
     print(int(length))
     print(int(background.duration))
@@ -15,7 +16,7 @@ def cutbg(length):
 
     try:
         ffmpeg_extract_subclip(
-            "background1.mp4",
+            bg,
             start,
             end,
             targetname="temp/background.mp4",
