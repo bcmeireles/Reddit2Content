@@ -6,9 +6,12 @@ import math
 from reddit.screenshots import downloadScreenshots
 from video.background import cutbg
 from video.make import makevideo
-from utils.cleaning import cleanup
+from utils.cleaning import cleanup, clearTerminal
 from uploaders.insta import InstagramUploader
 from utils.accounts import loadDB, saveDB
+from utils.menu import menu, logo, serviceSelector
+import time
+import random
 
 def text2mp3(r_obj):
     to_mp3 = SpeechEngine(GTTS, r_obj)
@@ -17,6 +20,7 @@ def text2mp3(r_obj):
 def main(sub, doneVids=[]):
     gt = getThreads(sub, doneVids)
     infos, doneVids = gt["infos"], gt["doneVideos"]
+    print(f"[{i}] Thread grabbed: {infos['title']}")
 
     a = text2mp3(infos)
     length, count = math.ceil(a["length"]), a["idx"]
@@ -30,20 +34,28 @@ def main(sub, doneVids=[]):
 
     return doneVids
 
-def r2c_ig(account, sub):
+def r2c_ig(account, sub, i):
 
     doneVids = account["doneVids"]
     
     gt = getThreads(sub, doneVids)
+    
     infos, doneVids = gt["infos"], gt["doneVideos"]
+
+    print(f"[{i}] Thread grabbed: {infos['title']}")
+
     a = text2mp3(infos)
     length, count = math.ceil(a["length"]), a["idx"]
     downloadScreenshots(infos, count)
+    print(f"[{i}] Screenshots downloaded")
     cutbg(length)
+    print(f"[{i}] Background cut")
     vidP = makevideo(count, length, infos, sub)
     cleanup()
+    print(f"[{i}] Uploading...")
     ig = InstagramUploader(account["username"], account["password"])
     ig.upload(vidP, account["tags"])
+    print(f"[{i}] Uploaded\n")
 
     accs = loadDB()
 
@@ -55,10 +67,22 @@ def r2c_ig(account, sub):
     
 
 if __name__ == "__main__":
-    sub = input("sub: ")
-    doneVids = []
-    pp = loadDB()
+    menu()
 
-    for coninha in pp["instagram"]:
-        while True:
-            r2c_ig(coninha, sub)
+    clearTerminal()
+    logo()
+
+    service = serviceSelector()
+    timer = int(input("Choose sleep time between posts (in minutes): ")) * 60
+
+    accs = loadDB()
+
+    i = 1
+
+    while True:
+        for acc in accs[service]:
+            if acc["enabled"] == "True":
+                sub = random.choice(acc["subs"])
+                print(f'[{i}] in {acc["username"]} from {sub}')
+                r2c_ig(acc, sub, i)
+        time.sleep(timer)

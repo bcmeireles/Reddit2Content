@@ -15,11 +15,16 @@ def checkThreads(allThreads, sub, doneVideos):
     #with open("./content/data/vids.json", "r", encoding="utf-8") as f:
     #    done = json.load(f)
 
+    toShuffle = []
+
     for thread in allThreads:
         if not thread.stickied:
             if not str(thread) in doneVideos:
                 if not thread.over_18:
-                    return {"thread": thread, "doneVideos": doneVideos}
+                    toShuffle.append(thread)
+                    
+    if len(toShuffle) > 0:
+        return {"thread": random.choice(toShuffle), "doneVideos": doneVideos}
 
     return checkThreads(sub.top(time_filter="hour"), sub, doneVideos)
 
@@ -36,7 +41,7 @@ def getInfo(thread):
     info["id"] = thread.id
     info["replies"] = []
 
-    for reply in random.shuffle(thread.comments):
+    for reply in thread.comments:
         if not isinstance(reply, MoreComments):
             if not reply == "[removed]":
                 if not reply == "[deleted]":
