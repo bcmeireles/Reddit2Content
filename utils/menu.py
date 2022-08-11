@@ -24,6 +24,7 @@ def serviceSelector():
 [1] Instagram
 [2] YouTUbe
 [3] Tiktok
+[4] Make Video Only
 
 [!] > """)
     if service == "1":
@@ -32,6 +33,8 @@ def serviceSelector():
         return "youtube"
     elif service == "3":
         return "tiktok"
+    elif service == "4":
+        return "makevideo"
 
 def menu():
     clearTerminal()

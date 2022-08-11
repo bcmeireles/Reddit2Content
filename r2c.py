@@ -79,13 +79,45 @@ if __name__ == "__main__":
 
     i = 1
 
-    while True:
-        for acc in accs[service]:
-            if acc["enabled"] == "True":
-                sub = random.choice(acc["subs"])
-                print(f'[{i}] in {acc["username"]} from {sub}')
-                r2c_ig(acc, sub, i)
+    if service != "makevideo":
 
-        print(f"Sleeping for {timer / 60} minutes")
-        i += 1
-        time.sleep(timer)
+        while True:
+            for acc in accs[service]:
+                if acc["enabled"] == "True":
+                    sub = random.choice(acc["subs"])
+                    print(f'[{i}] in {acc["username"]} from {sub}')
+                    r2c_ig(acc, sub, i)
+
+            print(f"Sleeping for {timer / 60} minutes")
+            i += 1
+            time.sleep(timer)
+
+    else:
+        subs = input("Enter subreddits separated by commas: ").split(" ")
+        while True:
+            sub = random.choice(subs)
+            print(f'[{i}] in {sub}')
+
+            acs = loadDB()
+            
+            doneVids = acs["doneNone"]
+
+            gt = getThreads(sub, doneVids)
+    
+            infos, doneVids = gt["infos"], gt["doneVideos"]
+
+            print(f"[{i}] Thread grabbed: {infos['title']}")
+
+            a = text2mp3(infos)
+            length, count = math.ceil(a["length"]), a["idx"]
+            downloadScreenshots(infos, count)
+            print(f"[{i}] Screenshots downloaded")
+            cutbg(length)
+            print(f"[{i}] Background cut")
+            vidP = makevideo(count, length, infos, sub)
+            cleanup()
+            print(f"[{i}] Video created")
+
+            acs["doneVids"] = doneVids
+
+            saveDB(acs)
